@@ -1,0 +1,20 @@
+{%extends "base.html"%}
+{%block title%}{{head_title}}{%endblock%}
+{%block head%}{{page_title}}{%endblock%}
+ 
+{%block content %}
+  
+  {% if user.username %}
+    <p> Welcome {{user.username}}!</p>
+    <p> Here you can store and share bookmarks </p>
+     
+  {%else %}
+     <p> Welcome anonymous user!
+     You need to <a href="/login/">login</a>
+     before {{page_body}} .</p>
+   {%endif%}
+
+ <h2> Bookmarks Shared by Users </h2>
+ {%include "shared_bookmark_list.html"%}
+ 
+{%endblock%}

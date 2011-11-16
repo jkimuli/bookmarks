@@ -1,0 +1,12 @@
+{%extends "base.html"%}
+{% block external %}
+ <script type="text/javascript" src="/site_media/bookmark_edit.js">
+ </script>
+{%endblock%}
+{%block title%} Bookmarks for {{username}} {%endblock%}
+  
+{%block head%} Bookmarks posted by user: {{username}} {%endblock%}
+{%block content%}
+     {% include "bookmark_list.html" %}
+  
+{%endblock%}

@@ -1,0 +1,6 @@
+Posted by : {{obj.user.username}}
+
+<p>Tags: {%for tag in obj.tag_set.all%}
+   <a href="/tag/{{tag.name}}">{{tag.name}}</a> &nbsp;
+    {%endfor%}
+</p>
