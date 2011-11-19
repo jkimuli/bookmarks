@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, include, url
 from bookmarks.views import main_page,logout_page,register_page,bookmark_save_page,tag_page,ajax_tag_autocomplete
 import os
 from django.views.generic.simple import direct_to_template
-from bookmarks.views import bookmark_vote_page,popular_page
+from bookmarks.views import bookmark_vote_page,popular_page,friends_page,friend_add
 from bookmarks.feeds import *
 
 site_media = os.path.join(os.path.dirname(__file__),'site_media')
@@ -55,5 +55,10 @@ urlpatterns = patterns('',
     
     #Feeds
     url(r'^feeds/(?P<url>.*)/$','django.contrib.syndication.views.feed',{'feed_dict':feeds}),
+    
+    #Social
+    
+    url(r'^friends/(\w+)/$',friends_page),
+    url(r'^friend/add/$',friend_add),
 
 )

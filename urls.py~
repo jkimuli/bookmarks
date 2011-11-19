@@ -3,7 +3,7 @@ from bookmarks.views import main_page,logout_page,register_page,bookmark_save_pa
 import os
 from django.views.generic.simple import direct_to_template
 from bookmarks.views import bookmark_vote_page,popular_page
-from bookmarks.feeds import RecentBookmarks
+from bookmarks.feeds import *
 
 site_media = os.path.join(os.path.dirname(__file__),'site_media')
 
@@ -13,7 +13,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 feeds = {
-	'recent': RecentBookmarks
+	'recent': RecentBookmarks,
+	'user': UserBookmarks
 }
 
 urlpatterns = patterns('',
@@ -28,7 +29,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     #Browsing
     url(r'^$',main_page),
-    url(r'user/(\w+)/$','bookmarks.views.user_page'),
+    url(r'^user/(\w+)/$','bookmarks.views.user_page'),
     
     #Session Management
     url(r'^login/$','django.contrib.auth.views.login'),

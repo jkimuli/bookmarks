@@ -11,6 +11,21 @@ href="/feeds/user/{{ username }}" />
   
 {%block head%} Bookmarks posted by user: {{username}} {%endblock%}
 {%block content%}
+
+{% ifequal user.username username %}
+<a href="/friends/{{ username }}/">View your friends</a>
+{% else %}
+{% if is_friend %}
+<a href="/friends/{{ user.username }}/">
+{{ username }} is a friend of yours</a>
+{% else %}
+<a href="/friend/add/?username={{ username }}">
+add {{ username }} to your friends</a>
+{% endif %}
+- <a href="/friends/{{ username }}/">
+view {{username }}'s friends</a>
+{% endifequal %}
+
      {% include "bookmark_list.html" %}
   
 {%endblock%}

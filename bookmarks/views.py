@@ -6,10 +6,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.template import RequestContext
 from bookmarks.forms import *
-from bookmarks.models import Bookmark,Tag,Link,SharedBookmark
+from bookmarks.models import Bookmark,Tag,Link,SharedBookmark,Friendship
 from django.contrib.auth.decorators import login_required
 from datetime import datetime,timedelta
 from django.db.models import Q
+from django.core.paginator import Paginator,InvalidPage
+
+
+ITEMS_PER_PAGE = 3
 
 
 
@@ -40,7 +44,28 @@ def user_page(request,username):
     user = get_object_or_404(User, username=username)
 
     #bookmarks = user.bookmark_set.all()
-    bookmarks = user.bookmark_set.order_by('-id')
+   # bookmarks = user.bookmark_set.order_by('-id')
+    
+    query_set = user.bookmark_set.order_by('-id')
+    paginator = Paginator(query_set,ITEMS_PER_PAGE)
+    
+    if request.user.is_authenticated():
+    	    is_friend=Friendship.objects.filter(from_friend=request.user,to_friend=user)
+    	    
+    else:
+    	    is_friend = False
+    
+    try:
+    	    page_number = int(request.GET['page'])
+    	    
+    except(KeyError,ValueError):
+    	    page_number =1
+    try:
+    	    page =paginator.page(page_number)
+    except InvalidPage:
+    	    raise Http404
+    	    
+    bookmarks = page.object_list
 
 
     variables = RequestContext(request,
@@ -48,6 +73,15 @@ def user_page(request,username):
                                 'bookmarks':bookmarks,
                                'show_tags':True,
                                'show_edit': username == request.user.username,
+                               'show_paginator':paginator.num_pages >1,
+                               'has_prev':page.has_previous(),
+                               'has_next':page.has_next(),
+                               'page':page_number,
+                               'pages':paginator.num_pages,
+                               'next_page':page_number +1,
+                               'prev_page':page_number -1,
+                               'is_friend':is_friend
+                               
                                })
 
     return render_to_response('user_page.html',variables)
@@ -284,4 +318,33 @@ def bookmark_page(request,bookmark_id):
 	return render_to_response('bookmark_page.html',variables)
 		
 	
-
+def friends_page(request,username):
+	user = get_object_or_404(User,username=username)
+	friends = [friendship.to_friend for friendship in user.friend_set.all()]
+	friend_bookmarks = Bookmark.objects.filter(user__in=friends).order_by('-id')
+	
+	variables = RequestContext(request,{
+			'username':username,
+			'friends':friends,
+			'bookmarks':friend_bookmarks[:10],
+			'show_tags':True,
+			'show_user':True
+	})
+	
+	return render_to_response('friends_page.html',variables)
+	
+@login_required
+def friend_add(request):
+	if 'username' in request.GET:
+		friend = get_object_or_404(User,username=request.GET['username'])
+		
+		friendship = Friendship(from_friend=request.user,to_friend=friend)
+		friendship.save()
+		
+		reverse_friendship = Friendship(from_friend=friend,to_friend=request.user)
+		reverse_friendship.save()
+		
+		return HttpResponseRedirect('/friends/%s/' % request.user.username)
+		
+	else:
+		raise Http404

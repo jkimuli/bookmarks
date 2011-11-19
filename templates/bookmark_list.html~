@@ -4,12 +4,15 @@
 <li>
 <a href="{{ bookmark.link.url }}" class="title">
 {{ bookmark.title }}</a>
+{% if show_edit %}
+ <a href="/save/?url={{bookmark.link.url|urlencode}}" class ="edit">[edit]</a>
+ {%endif %}
 <br />
 {% if show_tags %}
 Tags:
 {% if bookmark.tag_set.all %}
 <ul class="tags">
-{% for tag in bookmark.tag_set.all %}
+{% for tag in bookmark.tag_set.all %} 
 <li>
 <a href="/tag/{{ tag.name }}/">{{ tag.name }}</a>
 </li>

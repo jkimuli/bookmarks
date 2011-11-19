@@ -16,6 +16,7 @@
     <a href="/popular/">Popular</a>|
     {% if user.is_authenticated%}
       <a href="/save/">Submit</a> |
+      <a href="/friends/{{user.username}}/">Friends |
       welcome {{user.username}}
        (<a href="/logout/">Logout</a>
      {%else%}
